@@ -7,5 +7,12 @@
     "directory": ".",
     "binding": "ASSETS",
     "run_worker_first": true
-  }
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "tangerstylo-db",
+      "database_id": "9338810f-bd59-4dab-8f34-90de5daa8369"
+    }
+  ]
 }
