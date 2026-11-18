@@ -1,9 +1,9 @@
 
-
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
+    // اختبار الموقع
     if (url.pathname === "/api/health") {
       return Response.json({
         success: true,
@@ -12,6 +12,7 @@ export default {
       });
     }
 
+    // اختبار الاتصال بقاعدة البيانات
     if (url.pathname === "/api/db-check") {
       if (!env.DB) {
         return Response.json({
@@ -28,8 +29,9 @@ export default {
         return Response.json({
           success: true,
           database: "Connected",
-          result
+          result: result
         });
+
       } catch (error) {
         return Response.json({
           success: false,
@@ -38,13 +40,17 @@ export default {
       }
     }
 
+    // عرض ملفات المتجر
     if (env.ASSETS) {
       return env.ASSETS.fetch(request);
     }
 
     return new Response("TANGERSTYLO Store", {
-      headers: { "content-type": "text/plain" }
+      headers: {
+        "content-type": "text/plain"
+      }
     });
   }
 };
+
 
