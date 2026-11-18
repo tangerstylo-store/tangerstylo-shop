@@ -1,0 +1,378 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>لوحة تحكم TANGERSTYLO</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f1f5f9;color:#203040;font-family:Arial,Tahoma,sans-serif}
+header{background:#123653;color:white;padding:22px;text-align:center}
+header h1{margin:0;font-size:25px}
+header p{margin:8px 0 0;color:#d9eafa}
+.container{max-width:1050px;margin:25px auto;padding:0 15px}
+.card{background:white;padding:22px;border-radius:14px;margin-bottom:20px;box-shadow:0 3px 15px #0000000b}
+h2{font-size:19px;margin-top:0;color:#123653}
+input,textarea,select{width:100%;padding:12px;border:1px solid #d5dee8;border-radius:8px;margin:6px 0 13px;font-size:15px;background:white}
+textarea{min-height:70px;resize:vertical}
+label{font-size:14px;font-weight:bold}
+button{border:0;border-radius:8px;padding:11px 18px;cursor:pointer;font-size:14px;font-weight:bold}
+.primary{background:#1769aa;color:white}
+.danger{background:#fee2e2;color:#b91c1c}
+.secondary{background:#e5edf5;color:#123653}
+button:disabled{opacity:.5;cursor:wait}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.product{display:flex;gap:14px;align-items:center;border-bottom:1px solid #eee;padding:14px 0}
+.product img{width:65px;height:75px;object-fit:cover;border-radius:7px;background:#eee}
+.product-info{flex:1;min-width:0}
+.product-info strong{display:block;margin-bottom:6px}
+.muted{color:#64748b;font-size:13px}
+.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+.hidden{display:none!important}
+.notice{padding:12px;border-radius:8px;margin:10px 0;background:#eff6ff;color:#1d4ed8}
+.error{background:#fee2e2;color:#991b1b}
+.success{background:#dcfce7;color:#166534}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.tabs button.active{background:#123653;color:white}
+.empty{text-align:center;color:#64748b;padding:25px}
+@media(max-width:600px){
+ .grid{grid-template-columns:1fr}
+ .product{align-items:flex-start}
+ .container{margin-top:15px}
+ .card{padding:16px}
+}
+</style>
+</head>
+<body>
+
+<header>
+<h1>📚 TANGERSTYLO</h1>
+<p>لوحة إدارة المتجر الإلكتروني</p>
+</header>
+
+<div class="container">
+
+<section class="card" id="login">
+<h2>🔐 دخول الإدارة</h2>
+<p class="muted">هذه الصفحة خاصة بإدارة المكتبة.</p>
+<label>كلمة سر الإدارة</label>
+<input id="password" type="password" placeholder="أدخل كلمة السر">
+<button class="primary" id="loginBtn" onclick="login()">دخول</button>
+<div id="loginMessage"></div>
+</section>
+
+<section id="dashboard" class="hidden">
+
+<div class="card">
+<h2>مرحبا بك في إدارة TANGERSTYLO 👋</h2>
+<p class="muted">من هنا يمكنك تدبير منتجات متجرك.</p>
+<div class="tabs">
+<button class="primary active" id="productsTab" onclick="showTab('products')">📦 المنتجات</button>
+<button class="secondary" id="ordersTab" onclick="showTab('orders')">🧾 الطلبات</button>
+<button class="secondary" onclick="logout()">خروج</button>
+</div>
+</div>
+
+<div id="productsSection">
+<div class="card">
+<h2 id="formTitle">➕ إضافة منتج جديد</h2>
+<form id="productForm">
+<input type="hidden" id="productId">
+
+<div class="grid">
+<div>
+<label>اسم المنتج *</label>
+<input id="name" required placeholder="مثلاً: رجال وذئاب">
+</div>
+<div>
+<label>الثمن بالدرهم *</label>
+<input id="price" type="number" min="0" step="0.01" required placeholder="50">
+</div>
+<div>
+<label>الصنف</label>
+<input id="category" placeholder="روايات، كتب مدرسية...">
+</div>
+<div>
+<label>الكمية المتوفرة</label>
+<input id="stock" type="number" min="0" step="1" value="0">
+</div>
+</div>
+
+<label>وصف المنتج</label>
+<textarea id="description" placeholder="اكتب وصفاً مختصراً..."></textarea>
+
+<label>رابط صورة المنتج</label>
+<input id="image_url" type="url" placeholder="https://example.com/image.jpg">
+
+<label>حالة المنتج</label>
+<select id="active">
+<option value="1">ظاهر في المتجر</option>
+<option value="0">مخفي من المتجر</option>
+</select>
+
+<button class="primary" id="saveBtn" type="submit">حفظ المنتج</button>
+<button class="secondary hidden" type="button" id="cancelBtn" onclick="resetForm()">إلغاء التعديل</button>
+<div id="formMessage"></div>
+</form>
+</div>
+
+<div class="card">
+<h2>📚 المنتجات المسجلة</h2>
+<div id="productList"><p class="empty">جاري تحميل المنتجات...</p></div>
+</div>
+</div>
+
+<div id="ordersSection" class="hidden">
+<div class="card">
+<h2>🧾 طلبات الزبائن</h2>
+<div id="orderList"><p class="empty">جاري تحميل الطلبات...</p></div>
+</div>
+</div>
+
+</section>
+</div>
+
+<script>
+let adminPassword = "";
+
+const $ = id => document.getElementById(id);
+
+function message(id, text, type="notice") {
+  $(id).innerHTML = "";
+  const div = document.createElement("div");
+  div.className = "notice " + type;
+  div.textContent = text;
+  $(id).appendChild(div);
+}
+
+async function api(path, options={}) {
+  const response = await fetch(path, {
+    ...options,
+    headers: {
+      ...(options.headers || {}),
+      "Authorization": "Bearer " + adminPassword
+    }
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "وقع خطأ في الاتصال");
+  }
+  return data;
+}
+
+async function login() {
+  const password = $("password").value;
+  if (!password) {
+    message("loginMessage","أدخل كلمة السر أولا","error");
+    return;
+  }
+
+  $("loginBtn").disabled = true;
+
+  try {
+    adminPassword = password;
+    await api("/api/admin/products");
+
+    $("login").classList.add("hidden");
+    $("dashboard").classList.remove("hidden");
+    $("loginMessage").innerHTML = "";
+    await loadProducts();
+
+  } catch(error) {
+    adminPassword = "";
+    message("loginMessage","كلمة السر غير صحيحة أو تعذر الاتصال: "+error.message,"error");
+  } finally {
+    $("loginBtn").disabled = false;
+  }
+}
+
+function logout() {
+  adminPassword = "";
+  $("password").value = "";
+  $("dashboard").classList.add("hidden");
+  $("login").classList.remove("hidden");
+  resetForm();
+}
+
+function showTab(tab) {
+  $("productsSection").classList.toggle("hidden",tab!=="products");
+  $("ordersSection").classList.toggle("hidden",tab!=="orders");
+  $("productsTab").className = tab==="products"?"primary active":"secondary";
+  $("ordersTab").className = tab==="orders"?"primary active":"secondary";
+
+  if(tab==="orders") loadOrders();
+}
+
+function resetForm() {
+  $("productForm").reset();
+  $("productId").value = "";
+  $("stock").value = "0";
+  $("formTitle").textContent = "➕ إضافة منتج جديد";
+  $("saveBtn").textContent = "حفظ المنتج";
+  $("cancelBtn").classList.add("hidden");
+  $("formMessage").innerHTML = "";
+}
+
+$("productForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const id = $("productId").value;
+
+  const product = {
+    name: $("name").value.trim(),
+    price: Number($("price").value),
+    category: $("category").value.trim(),
+    stock: Number($("stock").value),
+    description: $("description").value.trim(),
+    image_url: $("image_url").value.trim(),
+    active: $("active").value === "1"
+  };
+
+  $("saveBtn").disabled = true;
+
+  try {
+    await api(
+      id ? "/api/admin/products/"+id : "/api/admin/products",
+      {
+        method: id ? "PUT" : "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify(product)
+      }
+    );
+
+    message("formMessage",id?"تم تعديل المنتج بنجاح":"تمت إضافة المنتج بنجاح","success");
+    resetForm();
+    await loadProducts();
+
+  } catch(error) {
+    message("formMessage",error.message,"error");
+  } finally {
+    $("saveBtn").disabled = false;
+  }
+});
+
+async function loadProducts() {
+  $("productList").textContent = "جاري تحميل المنتجات...";
+
+  try {
+    const data = await api("/api/admin/products");
+    $("productList").innerHTML = "";
+
+    if (!data.products.length) {
+      $("productList").innerHTML = '<p class="empty">لا توجد منتجات حاليا. أضف أول منتج من الأعلى.</p>';
+      return;
+    }
+
+    data.products.forEach(p => {
+      const item = document.createElement("div");
+      item.className = "product";
+
+      if(p.image_url) {
+        const img = document.createElement("img");
+        img.src = p.image_url;
+        img.alt = p.name;
+        img.onerror = () => img.removeAttribute("src");
+        item.appendChild(img);
+      }
+
+      const info = document.createElement("div");
+      info.className = "product-info";
+
+      const name = document.createElement("strong");
+      name.textContent = p.name;
+
+      const details = document.createElement("div");
+      details.className = "muted";
+      details.textContent = `${p.price} درهم | المخزون: ${p.stock} | ${p.category || "بدون صنف"} | ${p.active ? "ظاهر" : "مخفي"}`;
+
+      info.append(name,details);
+
+      const actions = document.createElement("div");
+      actions.className = "actions";
+
+      const edit = document.createElement("button");
+      edit.className = "secondary";
+      edit.textContent = "تعديل";
+      edit.onclick = () => editProduct(p);
+
+      const remove = document.createElement("button");
+      remove.className = "danger";
+      remove.textContent = "حذف";
+      remove.onclick = () => deleteProduct(p.id);
+
+      actions.append(edit,remove);
+      info.appendChild(actions);
+      item.appendChild(info);
+      $("productList").appendChild(item);
+    });
+
+  } catch(error) {
+    $("productList").textContent = "تعذر تحميل المنتجات: " + error.message;
+  }
+}
+
+function editProduct(p) {
+  $("productId").value = p.id;
+  $("name").value = p.name;
+  $("price").value = p.price;
+  $("category").value = p.category || "";
+  $("stock").value = p.stock;
+  $("description").value = p.description || "";
+  $("image_url").value = p.image_url || "";
+  $("active").value = String(p.active);
+  $("formTitle").textContent = "✏️ تعديل المنتج";
+  $("saveBtn").textContent = "حفظ التعديلات";
+  $("cancelBtn").classList.remove("hidden");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+async function deleteProduct(id) {
+  if(!confirm("واش متأكد بغيتي تحذف هاد المنتج؟")) return;
+
+  try {
+    await api("/api/admin/products/"+id,{method:"DELETE"});
+    await loadProducts();
+  } catch(error) {
+    alert("تعذر الحذف: "+error.message);
+  }
+}
+
+async function loadOrders() {
+  $("orderList").textContent = "جاري تحميل الطلبات...";
+
+  try {
+    const data = await api("/api/admin/orders");
+    $("orderList").innerHTML = "";
+
+    if(!data.orders.length) {
+      $("orderList").innerHTML = '<p class="empty">ما كايناش طلبات مسجلة حاليا.</p>';
+      return;
+    }
+
+    data.orders.forEach(order => {
+      const item = document.createElement("div");
+      item.className = "product-info";
+      item.style.padding = "14px 0";
+      item.style.borderBottom = "1px solid #eee";
+
+      const title = document.createElement("strong");
+      title.textContent = "طلب رقم #"+order.id+" - "+order.customer_name;
+
+      const details = document.createElement("p");
+      details.className = "muted";
+      details.textContent = "الهاتف: "+order.phone+" | المجموع: "+order.total+" درهم | الحالة: "+order.status;
+
+      item.append(title,details);
+      $("orderList").appendChild(item);
+    });
+
+  } catch(error) {
+    $("orderList").textContent = "تعذر تحميل الطلبات: "+error.message;
+  }
+}
+</script>
+</body>
+</html>
