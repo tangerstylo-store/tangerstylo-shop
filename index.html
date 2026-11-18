@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -6,24 +7,37 @@
 <title>TANGERSTYLO | مكتبة تانجير ستايلو</title>
 <style>
 :root{--blue:#1769aa;--navy:#123653;--pale:#eef6fc;--ink:#203040}
-*{box-sizing:border-box}body{margin:0;font-family:Tahoma,Arial,sans-serif;background:#f7f9fc;color:var(--ink)}
+*{box-sizing:border-box}
+body{margin:0;font-family:Tahoma,Arial,sans-serif;background:#f7f9fc;color:var(--ink)}
 header{background:linear-gradient(120deg,var(--navy),var(--blue));color:white;padding:22px 5%;display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
-.brand{font-size:27px;font-weight:800;letter-spacing:.5px}.tag{font-size:13px;opacity:.9;margin-top:5px}
+.brand{font-size:27px;font-weight:800;letter-spacing:.5px}
+.tag{font-size:13px;opacity:.9;margin-top:5px}
 .cart-pill{background:white;color:var(--navy);border:0;border-radius:30px;padding:11px 17px;font-weight:bold}
-.hero{padding:45px 5%;background:var(--pale);text-align:center}.hero h1{margin:0 0 10px;color:var(--navy);font-size:clamp(25px,4vw,38px)}.hero p{margin:0;color:#526779;line-height:1.8}
-.wrap{max-width:1100px;margin:30px auto;padding:0 18px}.toolbar{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:20px}
+.hero{padding:45px 5%;background:var(--pale);text-align:center}
+.hero h1{margin:0 0 10px;color:var(--navy);font-size:clamp(25px,4vw,38px)}
+.hero p{margin:0;color:#526779;line-height:1.8}
+.wrap{max-width:1100px;margin:30px auto;padding:0 18px}
+.toolbar{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:20px}
 input{font:inherit;border:1px solid #d4dfeb;border-radius:10px;padding:12px;background:white;min-width:220px;flex:1}
 .products{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
 .card{background:white;border:1px solid #e4ebf2;border-radius:16px;overflow:hidden;box-shadow:0 5px 18px #183b5810}
-.cover{height:175px;background:linear-gradient(145deg,#d9ebfa,#f4f9fe);display:flex;align-items:center;justify-content:center;color:var(--blue);font-size:48px}
-.details{padding:17px}.details h3{margin:0 0 8px;font-size:18px}.details p{margin:0 0 14px;color:#687b8b;font-size:13px}
+.cover{height:175px;background:linear-gradient(145deg,#d9ebfa,#f4f9fe);display:flex;align-items:center;justify-content:center;color:var(--blue);font-size:48px;overflow:hidden}
+.cover img{width:100%;height:100%;object-fit:contain}
+.details{padding:17px}
+.details h3{margin:0 0 8px;font-size:18px}
+.details p{margin:0 0 14px;color:#687b8b;font-size:13px;line-height:1.7}
 .price{font-size:20px;font-weight:bold;color:var(--blue);margin-bottom:14px}
-button{cursor:pointer;font:inherit}.add,.checkout{border:0;background:var(--blue);color:white;border-radius:10px;padding:11px 15px;font-weight:bold}.add{width:100%}
+button{cursor:pointer;font:inherit}
+.add,.checkout{border:0;background:var(--blue);color:white;border-radius:10px;padding:11px 15px;font-weight:bold}
+.add{width:100%}
+.add:disabled{background:#999;cursor:not-allowed}
 .empty{background:white;border-radius:12px;padding:25px;text-align:center;color:#718092;grid-column:1/-1}
 .cart{background:white;border:1px solid #e2eaf2;border-radius:16px;padding:20px;margin-top:30px}
-.cart h2{margin-top:0;color:var(--navy)}.cart-row{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid #edf1f5;align-items:center}
+.cart h2{margin-top:0;color:var(--navy)}
+.cart-row{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid #edf1f5;align-items:center;flex-wrap:wrap}
 .qty button{border:1px solid #d5e0ea;background:white;border-radius:7px;padding:3px 9px;margin:0 3px}
-.total{font-size:19px;font-weight:bold;margin:18px 0}.checkout{width:100%;padding:14px}
+.total{font-size:19px;font-weight:bold;margin:18px 0}
+.checkout{width:100%;padding:14px}
 .note{font-size:13px;color:#718092;line-height:1.7;margin-top:12px}
 footer{text-align:center;background:var(--navy);color:white;padding:22px;margin-top:45px;font-size:13px}
 @media(max-width:520px){header{align-items:flex-start}.brand{font-size:22px}.hero{padding:32px 18px}}
@@ -31,19 +45,30 @@ footer{text-align:center;background:var(--navy);color:white;padding:22px;margin-
 </head>
 <body>
 <header>
- <div><div class="brand">TANGERSTYLO</div><div class="tag">مكتبتكم للكتب والأدوات المدرسية والمكتبية</div></div>
- <button class="cart-pill" onclick="document.getElementById('cart').scrollIntoView({behavior:'smooth'})">🛒 السلة (<span id="count">0</span>)</button>
+ <div>
+  <div class="brand">TANGERSTYLO</div>
+  <div class="tag">مكتبتكم للكتب والأدوات المدرسية والمكتبية</div>
+ </div>
+ <button class="cart-pill" onclick="document.getElementById('cart').scrollIntoView({behavior:'smooth'})">
+  🛒 السلة (<span id="count">0</span>)
+ </button>
 </header>
+
 <section class="hero">
  <h1>مرحبا بكم في متجر TANGERSTYLO</h1>
  <p>تسوقوا كتبكم ولوازمكم بسهولة، واختاروا المنتجات ثم أرسلوا طلبكم عبر واتساب.<br>الأداء نقداً عند الاستلام.</p>
 </section>
+
 <main class="wrap">
  <div class="toolbar">
   <h2>منتجاتنا</h2>
   <input id="search" type="search" placeholder="قلب على كتاب أو منتج..." oninput="renderProducts()">
  </div>
- <section class="products" id="products"></section>
+
+ <section class="products" id="products">
+  <div class="empty">جاري تحميل المنتجات...</div>
+ </section>
+
  <section class="cart" id="cart">
   <h2>سلة المشتريات</h2>
   <div id="cartItems">السلة فارغة حالياً.</div>
@@ -52,42 +77,186 @@ footer{text-align:center;background:var(--navy);color:white;padding:22px;margin-
   <div class="note">طريقة الأداء: نقداً عند الاستلام. سيتم فتح واتساب برسالة فيها تفاصيل طلبكم.</div>
  </section>
 </main>
+
 <footer>© TANGERSTYLO — شريككم الموثوق</footer>
+
 <script>
 const WHATSAPP_NUMBER = "212777499449";
-// لإضافة منتج جديد: أضف سطراً داخل القائمة بنفس طريقة المثال.
-const products = [
- {id:1,name:"رجال وذئاب",description:"رواية",price:50,icon:"📖"}
-];
-let cart = {};
+let products = [];
+let cart = [];
+
+async function loadProducts(){
+ const box = document.getElementById("products");
+ box.innerHTML = '<div class="empty">جاري تحميل المنتجات...</div>';
+
+ try{
+  const response = await fetch("/api/products");
+  const data = await response.json();
+
+  if(!response.ok || !data.success){
+   throw new Error("تعذر تحميل المنتجات");
+  }
+
+  products = data.products || [];
+  renderProducts();
+  renderCart();
+ }catch(error){
+  box.innerHTML = '<div class="empty">تعذر تحميل المنتجات. حاول تحديث الصفحة.</div>';
+ }
+}
+
 function renderProducts(){
- const q=document.getElementById('search').value.trim().toLowerCase();
- const list=products.filter(p=>(p.name+" "+p.description).toLowerCase().includes(q));
- document.getElementById('products').innerHTML=list.length?list.map(p=>`
- <article class="card"><div class="cover"> ${p.icon||"📚"} </div><div class="details">
- <h3>${p.name}</h3><p>${p.description||"منتج من TANGERSTYLO"}</p>
- <div class="price">${p.price} درهم</div><button class="add" onclick="addToCart(${p.id})">أضف إلى السلة</button>
- </div></article>`).join(''):'<div class="empty">ما لقينا حتى منتج بهاد الاسم.</div>';
+ const box = document.getElementById("products");
+ const search = document.getElementById("search").value.trim().toLowerCase();
+
+ const filtered = products.filter(p =>
+  String(p.name || "").toLowerCase().includes(search) ||
+  String(p.category || "").toLowerCase().includes(search) ||
+  String(p.description || "").toLowerCase().includes(search)
+ );
+
+ box.innerHTML = "";
+
+ if(!filtered.length){
+  box.innerHTML = '<div class="empty">لا توجد منتجات مطابقة للبحث حالياً.</div>';
+  return;
+ }
+
+ filtered.forEach(p=>{
+  const card = document.createElement("article");
+  card.className = "card";
+
+  const cover = document.createElement("div");
+  cover.className = "cover";
+
+  if(p.image_url){
+   const img = document.createElement("img");
+   img.src = p.image_url;
+   img.alt = p.name;
+   img.onerror = ()=>{cover.textContent="📖";};
+   cover.appendChild(img);
+  }else{
+   cover.textContent = "📖";
+  }
+
+  const details = document.createElement("div");
+  details.className = "details";
+
+  const title = document.createElement("h3");
+  title.textContent = p.name;
+
+  const description = document.createElement("p");
+  description.textContent = p.description || p.category || "منتج من مكتبة TANGERSTYLO";
+
+  const price = document.createElement("div");
+  price.className = "price";
+  price.textContent = Number(p.price).toFixed(2) + " درهم";
+
+  const add = document.createElement("button");
+  add.className = "add";
+  add.textContent = "أضف إلى السلة";
+  add.onclick = ()=>addToCart(p.id);
+
+  details.append(title,description,price,add);
+  card.append(cover,details);
+  box.appendChild(card);
+ });
 }
-function addToCart(id){cart[id]=(cart[id]||0)+1;renderCart()}
-function changeQty(id,delta){cart[id]=(cart[id]||0)+delta;if(cart[id]<=0)delete cart[id];renderCart()}
+
+function addToCart(id){
+ const product = products.find(p=>Number(p.id)===Number(id));
+ if(!product)return;
+
+ const existing = cart.find(item=>Number(item.id)===Number(id));
+
+ if(existing){
+  existing.qty++;
+ }else{
+  cart.push({...product,qty:1});
+ }
+
+ renderCart();
+}
+
+function changeQty(id,change){
+ const item = cart.find(p=>Number(p.id)===Number(id));
+ if(!item)return;
+
+ item.qty += change;
+
+ if(item.qty<=0){
+  cart = cart.filter(p=>Number(p.id)!==Number(id));
+ }
+
+ renderCart();
+}
+
 function renderCart(){
- let ids=Object.keys(cart),count=ids.reduce((s,id)=>s+cart[id],0),sum=0;
- document.getElementById('count').textContent=count;
- document.getElementById('cartItems').innerHTML=ids.length?ids.map(id=>{
-  let p=products.find(x=>x.id==id),line=p.price*cart[id];sum+=line;
-  return `<div class="cart-row"><div><b>${p.name}</b><br><small>${p.price} درهم للوحدة</small></div><div class="qty"><button onclick="changeQty(${id},-1)">−</button>${cart[id]}<button onclick="changeQty(${id},1)">+</button></div><b>${line} درهم</b></div>`;
- }).join(''):'السلة فارغة حالياً.';
- document.getElementById('total').textContent='المجموع: '+sum+' درهم';
+ const box = document.getElementById("cartItems");
+ const count = cart.reduce((sum,item)=>sum+item.qty,0);
+ const total = cart.reduce((sum,item)=>sum+(Number(item.price)*item.qty),0);
+
+ document.getElementById("count").textContent = count;
+ document.getElementById("total").textContent = "المجموع: "+total.toFixed(2)+" درهم";
+
+ if(!cart.length){
+  box.textContent = "السلة فارغة حالياً.";
+  return;
+ }
+
+ box.innerHTML = "";
+
+ cart.forEach(item=>{
+  const row = document.createElement("div");
+  row.className = "cart-row";
+
+  const name = document.createElement("strong");
+  name.textContent = item.name+" — "+Number(item.price).toFixed(2)+" درهم";
+
+  const qty = document.createElement("span");
+  qty.className = "qty";
+
+  const minus = document.createElement("button");
+  minus.textContent = "−";
+  minus.onclick = ()=>changeQty(item.id,-1);
+
+  const number = document.createElement("span");
+  number.textContent = item.qty;
+
+  const plus = document.createElement("button");
+  plus.textContent = "+";
+  plus.onclick = ()=>changeQty(item.id,1);
+
+  qty.append(minus,number,plus);
+  row.append(name,qty);
+  box.appendChild(row);
+ });
 }
+
 function sendOrder(){
- let ids=Object.keys(cart);if(!ids.length){alert('السلة فارغة. أضف منتجاً أولاً.');return}
- let lines=ids.map(id=>{let p=products.find(x=>x.id==id);return `- ${p.name} × ${cart[id]} = ${p.price*cart[id]} درهم`});
- let total=ids.reduce((s,id)=>s+products.find(p=>p.id==id).price*cart[id],0);
- let msg='السلام عليكم، بغيت نأكد هاد الطلب من TANGERSTYLO:%0A'+encodeURIComponent(lines.join('\n'))+'%0Aالمجموع: '+total+' درهم%0Aالأداء نقداً عند الاستلام.';
- window.open('https://wa.me/'+WHATSAPP_NUMBER+'?text='+msg,'_blank');
+ if(!cart.length){
+  alert("السلة فارغة. أضف منتجاً أولاً.");
+  return;
+ }
+
+ const total = cart.reduce((sum,item)=>sum+(Number(item.price)*item.qty),0);
+
+ let message = "السلام عليكم، أريد طلب المنتجات التالية من TANGERSTYLO:%0A";
+
+ cart.forEach(item=>{
+  message += "%0A- "+encodeURIComponent(item.name)+
+   " × "+item.qty+
+   " = "+(Number(item.price)*item.qty).toFixed(2)+" درهم";
+ });
+
+ message += "%0A%0Aالمجموع: "+total.toFixed(2)+" درهم";
+ message += "%0Aالأداء نقداً عند الاستلام.";
+
+ const url = "https://wa.me/"+WHATSAPP_NUMBER+"?text="+message;
+ window.open(url,"_blank");
 }
-renderProducts();renderCart();
+
+loadProducts();
 </script>
 </body>
 </html>
