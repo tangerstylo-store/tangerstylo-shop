@@ -203,6 +203,77 @@ export default {
           }
         }
 
+        // رفع صور المنتجات مباشرة إلى ImageKit
+        if (path === "/api/admin/upload" && method === "POST") {
+          if (!env.IMAGEKIT_PRIVATE_KEY) {
+            return json({
+              success: false,
+              message: "ImageKit private key is missing"
+            }, 500);
+          }
+
+          const formData = await request.formData();
+          const file = formData.get("file");
+
+          if (!file || typeof file.arrayBuffer !== "function") {
+            return json({
+              success: false,
+              message: "المرجو اختيار صورة"
+            }, 400);
+          }
+
+          if (!file.type || !file.type.startsWith("image/")) {
+            return json({
+              success: false,
+              message: "الملف المختار ليس صورة"
+            }, 400);
+          }
+
+          if (file.size > 10 * 1024 * 1024) {
+            return json({
+              success: false,
+              message: "حجم الصورة يجب ألا يتجاوز 10 ميغابايت"
+            }, 400);
+          }
+
+          const uploadData = new FormData();
+          uploadData.append("file", file);
+          uploadData.append(
+            "fileName",
+            file.name || `tangerstylo-${Date.now()}.jpg`
+          );
+          uploadData.append("folder", "/tangerstylo-products");
+
+          const uploadResponse = await fetch(
+            "https://upload.imagekit.io/api/v1/files/upload",
+            {
+              method: "POST",
+              headers: {
+                Authorization:
+                  `Basic ${btoa(env.IMAGEKIT_PRIVATE_KEY + ":")}`
+              },
+              body: uploadData
+            }
+          );
+
+          const uploadResult = await uploadResponse.json();
+
+          if (!uploadResponse.ok) {
+            return json({
+              success: false,
+              message: uploadResult.message ||
+                "فشل رفع الصورة إلى ImageKit"
+            }, 502);
+          }
+
+          return json({
+            success: true,
+            message: "تم رفع الصورة بنجاح",
+            image_url: uploadResult.url,
+            file_id: uploadResult.fileId
+          });
+        }
+
         // عرض المنتجات للإدارة
         if (path === "/api/admin/products" && method === "GET") {
           const result = await env.DB.prepare(`
