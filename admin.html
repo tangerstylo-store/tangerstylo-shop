@@ -95,6 +95,18 @@ button.secondary{background:#687887}
   white-space:pre-wrap;
 }
 .muted{color:#687887;font-size:13px}
+.upload-area{
+  background:#f4f8fc;
+  border:1px dashed #1769aa;
+  border-radius:10px;
+  padding:14px;
+  margin:10px 0;
+}
+.upload-status{
+  font-size:14px;
+  line-height:1.7;
+  color:#1769aa;
+}
 </style>
 </head>
 
@@ -117,18 +129,41 @@ button.secondary{background:#687887}
     <h2 id="formTitle">➕ إضافة منتج جديد</h2>
 
     <input id="name" placeholder="اسم المنتج">
+
     <input id="price" type="number" min="0" step="0.01"
       placeholder="الثمن بالدرهم">
+
     <input id="category" placeholder="الصنف">
+
     <input id="stock" type="number" min="0" step="1"
       placeholder="الكمية في المخزون">
 
-    <label>رابط صورة المنتج:</label>
-    <input id="image" type="url"
-      placeholder="ضع رابط صورة الغلاف هنا"
-      oninput="previewImage()">
+    <div class="upload-area">
+      <h3>📸 صورة المنتج</h3>
+      <p class="muted">
+        اختار صورة من الحاسوب ثم اضغط على رفع الصورة.
+        الحجم الأقصى 10 ميغابايت.
+      </p>
 
-    <img id="imagePreview" class="preview" alt="معاينة الصورة">
+      <input
+        id="imageFile"
+        type="file"
+        accept="image/*"
+      >
+
+      <button id="uploadButton" onclick="uploadImage()">
+        📤 رفع الصورة من الحاسوب
+      </button>
+
+      <p id="uploadStatus" class="upload-status"></p>
+
+      <img id="imagePreview" class="preview" alt="معاينة الصورة">
+    </div>
+
+    <label>رابط الصورة (يُملأ تلقائياً بعد الرفع):</label>
+    <input id="image" type="url"
+      placeholder="رابط الصورة سيظهر هنا"
+      oninput="previewImage()">
 
     <textarea id="description"
       placeholder="وصف المنتج"></textarea>
@@ -190,7 +225,11 @@ async function api(path, options = {}){
     "Authorization":"Bearer " + adminPassword
   };
 
-  if(options.body){
+  // لا نحدد Content-Type يدوياً عند إرسال FormData
+  if(
+    options.body &&
+    !(options.body instanceof FormData)
+  ){
     headers["Content-Type"] = "application/json";
   }
 
@@ -227,10 +266,68 @@ async function login(){
   }
 }
 
+// رفع الصورة مباشرة من الحاسوب
+async function uploadImage(){
+  const fileInput = document.getElementById("imageFile");
+  const file = fileInput.files[0];
+
+  const button = document.getElementById("uploadButton");
+  const status = document.getElementById("uploadStatus");
+
+  if(!file){
+    status.textContent = "المرجو اختيار صورة أولاً.";
+    return;
+  }
+
+  if(!file.type.startsWith("image/")){
+    status.textContent = "الملف المختار ليس صورة.";
+    return;
+  }
+
+  if(file.size > 10 * 1024 * 1024){
+    status.textContent = "حجم الصورة يجب ألا يتجاوز 10 ميغابايت.";
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "جاري رفع الصورة...";
+  status.textContent = "المرجو الانتظار، يتم رفع الصورة الآن...";
+
+  try{
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const result = await api("/api/admin/upload",{
+      method:"POST",
+      body:formData
+    });
+
+    if(!result.image_url){
+      throw new Error("لم يتم إرجاع رابط الصورة.");
+    }
+
+    document.getElementById("image").value =
+      result.image_url;
+
+    previewImage();
+
+    status.textContent =
+      "✅ تم رفع الصورة بنجاح! يمكنك الآن إضافة المنتج.";
+
+  }catch(error){
+    status.textContent =
+      "❌ فشل رفع الصورة: " + error.message;
+  }finally{
+    button.disabled = false;
+    button.textContent = "📤 رفع الصورة من الحاسوب";
+  }
+}
+
 function previewImage(){
   const url = safeImageURL(
     document.getElementById("image").value.trim()
   );
+
   const preview = document.getElementById("imagePreview");
 
   if(url){
@@ -275,7 +372,7 @@ function validateForm(data){
   }
 
   if(data.image_url && !safeImageURL(data.image_url)){
-    alert("رابط الصورة غير صحيح. استعمل رابط يبدأ بـ https:// أو http://");
+    alert("رابط الصورة غير صحيح.");
     return false;
   }
 
@@ -360,6 +457,9 @@ function resetForm(){
     .forEach(id => {
       document.getElementById(id).value = "";
     });
+
+  document.getElementById("imageFile").value = "";
+  document.getElementById("uploadStatus").textContent = "";
 
   document.getElementById("formTitle").textContent =
     "➕ إضافة منتج جديد";
