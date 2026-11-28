@@ -62,7 +62,7 @@ export default {
 
         await ensureSchema();
 
-        // التحقق من اتصال قاعدة البيانات
+        // فحص قاعدة البيانات
         if (path === "/api/db-check" && method === "GET") {
           const result = await env.DB
             .prepare("SELECT 1 AS ok")
@@ -193,7 +193,7 @@ export default {
           }, 201);
         }
 
-        // حماية جميع مسارات الإدارة
+        // حماية مسارات الإدارة
         if (path.startsWith("/api/admin/")) {
           if (!isAdmin()) {
             return json({
@@ -203,7 +203,7 @@ export default {
           }
         }
 
-        // رفع صور المنتجات مباشرة إلى ImageKit
+        // رفع الصور إلى ImageKit
         if (path === "/api/admin/upload" && method === "POST") {
           if (!env.IMAGEKIT_PRIVATE_KEY) {
             return json({
@@ -327,12 +327,12 @@ export default {
         }
 
         // تعديل أو حذف منتج
-        const match = path.match(
+        const productMatch = path.match(
           /^\/api\/admin\/products\/(\d+)$/
         );
 
-        if (match) {
-          const id = Number(match[1]);
+        if (productMatch) {
+          const id = Number(productMatch[1]);
 
           if (method === "PUT") {
             const data = await request.json();
@@ -398,13 +398,59 @@ export default {
           });
         }
 
+        // إصلاح تغيير حالة الطلب
+        const statusMatch = path.match(
+          /^\/api\/admin\/orders\/(\d+)\/status$/
+        );
+
+        if (statusMatch && method === "PATCH") {
+          const orderId = Number(statusMatch[1]);
+          const data = await request.json();
+          const status = String(data.status || "");
+
+          const allowedStatuses = [
+            "new",
+            "preparing",
+            "ready",
+            "delivered",
+            "cancelled"
+          ];
+
+          if (!allowedStatuses.includes(status)) {
+            return json({
+              success: false,
+              message: "حالة الطلب غير صحيحة"
+            }, 400);
+          }
+
+          const result = await env.DB.prepare(`
+            UPDATE orders
+            SET status = ?
+            WHERE id = ?
+          `).bind(status, orderId).run();
+
+          if (result.meta.changes === 0) {
+            return json({
+              success: false,
+              message: "الطلب غير موجود"
+            }, 404);
+          }
+
+          return json({
+            success: true,
+            message: "تم تحديث حالة الطلب بنجاح",
+            order_id: orderId,
+            status
+          });
+        }
+
         return json({
           success: false,
           message: "API route not found"
         }, 404);
       }
 
-      // عرض ملفات المتجر
+      // ملفات المتجر
       if (env.ASSETS) {
         return env.ASSETS.fetch(request);
       }
